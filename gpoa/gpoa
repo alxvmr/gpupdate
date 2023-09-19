@@ -28,6 +28,8 @@ from frontend.frontend_manager import frontend_manager, determine_username
 from plugin import plugin_manager
 from messages import message_with_code
 
+from report import save_report
+
 from util.util import get_machine_name
 from util.users import (
     is_root,
@@ -39,6 +41,8 @@ from util.arguments import (
 from util.logging import log
 from util.exceptions import geterr
 from util.signals import signal_handler
+
+import ipdb
 
 def parse_arguments():
     arguments = argparse.ArgumentParser(description='Generate configuration out of parsed policies')
@@ -65,6 +69,10 @@ def parse_arguments():
         type=int,
         default=4,
         help='Set logging verbosity level')
+    arguments.add_argument('--result',
+        type=str,
+        default='~/wolk',
+        help='Set the path for saving graphical results')
     return arguments.parse_args()
 
 class gpoa_controller:
@@ -182,9 +190,14 @@ class gpoa_controller:
             pm = plugin_manager()
             pm.run()
 
+    def save_report(self):
+        save_report(path=self.__args.result)
+
+
 def main():
     controller = gpoa_controller()
     controller.run()
+    controller.save_report()
 
 if __name__ == "__main__":
     default_handler = signal.getsignal(signal.SIGINT)

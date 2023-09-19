@@ -131,7 +131,7 @@ class firefox_applier(applier_frontend):
             json.dump(self.policies_json, f)
             logdata = dict()
             logdata['destfile'] = destfile
-            log('D91', logdata)
+        log('D91', logdata)
 
         destfile = os.path.join(self.__firefox_installdir2, 'policies.json')
         os.makedirs(self.__firefox_installdir2, exist_ok=True)
@@ -139,7 +139,7 @@ class firefox_applier(applier_frontend):
             json.dump(self.policies_json, f)
             logdata = dict()
             logdata['destfile'] = destfile
-            log('D91', logdata)
+        log('D91', logdata)
 
     def apply(self):
         if self.__module_enabled:

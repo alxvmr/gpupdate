@@ -19,6 +19,7 @@
 import json
 import datetime
 import logging
+from report import reporting
 
 from messages import message_with_code
 
@@ -56,6 +57,8 @@ class slogm(object):
 
 def log(message_code, data=None):
     mtype = message_code[0]
+    mess = slogm(message_with_code(message_code), data)
+    reporting(message_code, data, mess.message)
 
     if 'I' == mtype:
         logging.info(slogm(message_with_code(message_code), data))
@@ -73,5 +76,4 @@ def log(message_code, data=None):
         logging.debug(slogm(message_with_code(message_code), data))
         return
 
-    logging.error(slogm(message_with_code(message_code), data))
-
+    logging.error(slogm(message_with_code(message_code), data))    

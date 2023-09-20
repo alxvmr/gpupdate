@@ -72,7 +72,7 @@ class chromium_applier(applier_frontend):
             json.dump(dict_item_to_list(self.policies_json), f)
             logdata = dict()
             logdata['destfile'] = destfile
-            log('D97', logdata)
+        log('D97', logdata)
 
         destfilerec = os.path.join(self.__recommended_policies_path, 'policies.json')
         os.makedirs(self.__recommended_policies_path, exist_ok=True)
@@ -80,7 +80,7 @@ class chromium_applier(applier_frontend):
             json.dump(dict_item_to_list(recommended__json), f)
             logdata = dict()
             logdata['destfilerec'] = destfilerec
-            log('D97', logdata)
+        log('D97', logdata)
 
 
     def apply(self):

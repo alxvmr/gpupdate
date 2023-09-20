@@ -36,8 +36,7 @@ def reporting(message_code, data, mess):
             if data["varname"] == 'machine_name':
                 entity.computer_name = data["value"]
         elif message_code == "D91": # firefox
-            # p = Policy(data["destfile"], "firefox")
-            entity.policies = Policy(data["destfile"], "firefox")
+            entity.policies = Policy(data["destfile"], "Firefox")
         elif message_code[0] == "W":
             entity.set_warning(Warning(mess, data))
         elif message_code[0] == "E":

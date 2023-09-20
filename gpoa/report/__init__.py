@@ -7,6 +7,7 @@ from .gpo import GPO
 from .event import Error, Warning
 from .rep import ReportComputer, ReportUser
 from .pol import Policy
+from .regkey import RegistryKey
 
 import ipdb
 
@@ -37,6 +38,8 @@ def reporting(message_code, data, mess):
                 entity.computer_name = data["value"]
         elif message_code == "D91": # firefox
             entity.policies = Policy(data["destfile"], "Firefox")
+        elif message_code == "D22": # ключи реестра
+            entity.regkeys = RegistryKey(data["keyname"], data["valuename"], data["type"], data["data"])
         elif message_code[0] == "W":
             entity.set_warning(Warning(mess, data))
         elif message_code[0] == "E":

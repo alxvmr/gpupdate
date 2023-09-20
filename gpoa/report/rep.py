@@ -13,6 +13,7 @@ class Report():
         self._gpos_applied = []
         self._gpos_not_applied = []
         self._policies = []
+        self._regkeys = []
         self._timestamp = str(datetime.now())
     
     @property
@@ -39,6 +40,10 @@ class Report():
     def policies(self):
         return self._policies
     
+    @property
+    def regkeys(self):
+        return self._regkeys
+    
     @domain.setter
     def domain(self, d):
         self._domain = d
@@ -62,6 +67,10 @@ class Report():
     def policies(self, p):
         self._policies.append(p)
 
+    @regkeys.setter
+    def regkeys(self, rk):
+        self._regkeys.append(rk)
+
     @property
     def is_machine(self):
         return self._is_machine
@@ -78,6 +87,15 @@ class Report():
     def get_pols_dict(self):
         return [p.get_info_dict() for p in self.policies]
     
+    def get_regkeys_dict(self):
+        d = {}
+        for rk in self.regkeys:
+            cur = d.get(rk.keyname, [])
+            cur.append(rk.get_info_dict_without_keyname())
+            d[rk.keyname] = cur
+            
+        return d
+    
     def get_info_dict(self):
         return {
             "timestamp": self.timestamp,
@@ -89,7 +107,8 @@ class Report():
                 "type":"summary"
             },
             "gpos": self.get_gpos_dict(),
-            "pols" : self.get_pols_dict()
+            "pols" : self.get_pols_dict(),
+            "regkeys" : self.get_regkeys_dict()
         }
 
 

@@ -2,13 +2,10 @@ import json
 import ipdb
 import os
 
-class Policy():
-    type_obj = "pref"
+class AdmTemplate():
+    type_obj = "adm_templates"
 
     def __init__(self, path, name):
-        # while os.stat(path).st_size == 0:
-        #     pass
-        #ipdb.set_trace()
         self._info = json.load(open(path))
         self._name = name
 

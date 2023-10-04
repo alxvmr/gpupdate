@@ -6,7 +6,7 @@ from datetime import datetime
 from .gpo import GPO
 from .event import Error, Warning
 from .rep import ReportComputer, ReportUser
-from .pol import Policy
+from .admtemp import AdmTemplate
 from .regkey import RegistryKey
 
 import ipdb
@@ -37,7 +37,13 @@ def reporting(message_code, data, mess):
             if data["varname"] == 'machine_name':
                 entity.computer_name = data["value"]
         elif message_code == "D91": # firefox
-            entity.policies = Policy(data["destfile"], "Firefox")
+            entity.policies = AdmTemplate(data["destfile"], "Mozzila Firefox")
+        # elif message_code == "D97": # chromium
+            # потому что с таким номером существует 2 лога, но с разными ключами в data
+            # try:
+            #     entity.policies = AdmTemplate(data["destfile"], "Chromium")
+            # except:
+            #     pass
         elif message_code == "D22": # ключи реестра
             entity.regkeys = RegistryKey(data["keyname"], data["valuename"], data["type"], data["data"])
         elif message_code[0] == "W":

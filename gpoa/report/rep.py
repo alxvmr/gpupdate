@@ -12,7 +12,7 @@ class Report():
         self._gpos = []
         self._gpos_applied = []
         self._gpos_not_applied = []
-        self._policies = []
+        self._admtempls = []
         self._regkeys = []
         self._timestamp = str(datetime.now())
     
@@ -37,8 +37,8 @@ class Report():
         return self._timestamp
     
     @property
-    def policies(self):
-        return self._policies
+    def admtempls(self):
+        return self._admtempls
     
     @property
     def regkeys(self):
@@ -63,12 +63,19 @@ class Report():
     def errors(self, e):
         self._errors.append(e)
 
-    @policies.setter
+    @admtempls.setter
     def policies(self, p):
-        self._policies.append(p)
+        for p_exist in self._admtempls:
+            if p_exist.get_info_dict() == p.get_info_dict():
+                return
+            
+        self._admtempls.append(p)
 
     @regkeys.setter
     def regkeys(self, rk):
+        for rk_exist in self._regkeys:
+            if rk_exist.get_info_dict_full() == rk.get_info_dict_full():
+                return
         self._regkeys.append(rk)
 
     @property
@@ -84,8 +91,8 @@ class Report():
     def get_errors_dict(self):
         return [e.get_info_dict() for e in self.errors]
     
-    def get_pols_dict(self):
-        return [p.get_info_dict() for p in self.policies]
+    def get_admtempls_dict(self):
+        return [p.get_info_dict() for p in self.admtempls]
     
     def get_regkeys_dict(self):
         d = {}
@@ -93,7 +100,6 @@ class Report():
             cur = d.get(rk.keyname, [])
             cur.append(rk.get_info_dict_without_keyname())
             d[rk.keyname] = cur
-            
         return d
     
     def get_info_dict(self):
@@ -107,7 +113,7 @@ class Report():
                 "type":"summary"
             },
             "gpos": self.get_gpos_dict(),
-            "pols" : self.get_pols_dict(),
+            "admtempls" : self.get_admtempls_dict(),
             "regkeys" : self.get_regkeys_dict()
         }
 

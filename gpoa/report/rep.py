@@ -112,11 +112,11 @@ class Report():
                 "warnings":self.get_warnings_dict(),
                 "type":"summary"
             },
-            # "details":{
-            "gpos": self.get_gpos_dict(),
-            "admtempls" : self.get_admtempls_dict(),
-            "regkeys" : self.get_regkeys_dict()
-            # }
+            "details":{
+                "gpos": self.get_gpos_dict(),
+                "admtempls" : self.get_admtempls_dict(),
+                "regkeys" : self.get_regkeys_dict()
+            }
         }
 
 

@@ -89,12 +89,12 @@
                                     <div class="section">
                                         {% set id = k1 ~ "_div" %}
                                         <div id={{id}} class="section_title" onclick="show_hide(id)">
-                                                <span class="section_title_span" tabindex="0">
-                                                    {{ headers[k1] }}
-                                                </span>
+                                            <span class="section_title_span" tabindex="0">
+                                                {{ headers[k1] }}
+                                            </span>
                                         </div>
                                         {% set id = k1 ~ "_container" %}
-                                        <div id={{id}} class="container">
+                                        <div id={{id}} class="container" style="display: none;">
                                             <div class="secsection">
                                         <!-- отрисовка ошибок и предупреждений -->
                                                 {% if v1 |length != 0%}
@@ -131,173 +131,143 @@
                                 {% endif %}
                             {% endfor %}
                         </div>
-
-                {% elif k == "regkeys" %}
-                        {% for k_rk, v_rk in v.items() %}
-                            <div class="secsection">
-                                {% set id = k_rk ~ "_" ~ loop.index ~ "_div" %}
-                                <div id={{id}} class="section_title" onclick="show_hide(id)">
-                                    <span class="section_title_span" tabindex="0">
-                                        {{ k_rk }}
-                                    </span>
-                                </div>
-            
-                                {% set id = k_rk ~ "_" ~ loop.index ~ "_container" %}
-                                <div id={{id}} class="container" style="display: none;">
-                                    <div class="secsection">
-                                        Registry key info:
-
-                                        <table class="tablein">
-                                            <!-- заголовок - ключи словаря -->
-                                            <tr class="trin">
-                                                {% for header in v_rk[0].keys()%}
-                                                    {% if header != "type" %}
-                                                        <td style="width: 30%;"><b>{{header}}</b></td>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </tr>
-
-                                            {% for dict_info in v_rk%}
-                                                <tr class="trin">
-                                                    {% for kk_rk, value_rk in dict_info.items() %}
-                                                        {% if kk_rk != "type" %}
-                                                            <td style="width: 30%;">{{value_rk}}</td>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </tr>
-                                            {% endfor %}
-                                        </table>
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                        
-                {% endif %}
-                    </div>
-                </div> 
-            {% elif v is iterable and (v is not string and v is not mapping) %}
-                <div class="section">
-                    {% set id = k ~ "_div" %}
-                    <div id={{id}} class="section_title" onclick="show_hide(id)">
-                        <span class="section_title_span" tabindex="0">
-                            {{ headers[k] }}
-                        </span>
-                    </div>
-
-                    {% set id = k ~ "_container" %}
-                    <div id={{id}} class="container" style="display: none;">
+                {% elif k == "details" %}
                         <div class="secsection">
-                            {% if v |length != 0%}
-                                <!-- create table -->
-                                {% if v[0]["type"] == "error" %}
-                                    Errors:
-                                    <table class="tablein">
-                                        <tr class="trin">
-                                            <td> <b> </b> </td>
-                                            <td> <b>Text</b> </td>
-                                            <td> <b>Additionaly</b> </td>
-                                        </tr>
-                                        {% for e in v%}
-                                            <tr class="trin"></tr>
-                                                <td>
-                                                    <svg width="15" height="15" viewBox="0 0 15 15">
-                                                        <image x="0" y="0" width="15" height="15" xlink:href="/usr/lib/python3/site-packages/gpoa/report/html/imgs/error.jpg"/>
-                                                    </svg>
-                                                </td>
-                                                <td>{{ e["text"] }}</td>
-                                                <td>{{ e["info"] }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                {% elif v[0]["type"]=="warning"%}
-                                    Warnings:
-                                    <table class="tablein">
-                                        <tr class="trin">
-                                            <td> <b> </b> </td>
-                                            <td> <b>Text</b> </td>
-                                            <td> <b>Additionaly</b> </td>
-                                        </tr>
-                                        {% for w in v%}
-                                            <tr class="trin"></tr>
-                                                <td>
-                                                    <svg width="15" height="15" viewBox="0 0 15 15">
-                                                        <image x="0" y="0" width="15" height="15" xlink:href="/usr/lib/python3/site-packages/gpoa/report/html/imgs/warning.jpg"/>
-                                                    </svg>
-                                                </td>
-                                                <td>{{ w["text"] }}</td>
-                                                <td>{{ w["info"] }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                {% elif v[0]["type"]=="gpo"%}
-                                    Received Group Policy objects:
-                                    <table class="tablein">
-                                        <tr class="trin">
-                                            <td> <b>Name</b> </td>
-                                            <td> <b>UUID</b> </td>
-                                            <td> <b>file_sys_path</b> </td>
-                                        </tr>
+                            {% for k_det, val_det in v.items() %}
 
-                                        {% for gpo in v%}
-                                            <tr class="trin"></tr>
-                                                <td>{{gpo["name_gpo"]}}</td>
-                                                <td>{{gpo["uuid"]}}</td>
-                                                <td>{{gpo["path"]}}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    </table>
-                                {% elif v[0]["type"] == "pol"%}
-                                    {% for pol_obj in v%}
-                                        <div class="section">
-                                            {% set id = pol_obj["name"] ~ "_" ~ pol_obj["type"] ~ loop.index ~ "_div" %}
-                                            <div id={{id}} class="section_title" onclick="show_hide(id)">
-                                                <span class="section_title_span" tabindex="0">
-                                                    {{ pol_obj["name"] }}
-                                                </span>
-                                            </div>
-                        
-                                            {% set id =  pol_obj["name"] ~ "_" ~ pol_obj["type"] ~ loop.index ~ "_container" %}
-                                            <div id={{id}} class="container" style="display: none;">
+                                <div class="section">
+                                    {% set id = k_det ~ "_container" %}
+                                    <div id={{id}} class="section_title" onclick="show_hide(id)">
+                                        <span class="section_title_span">
+                                            {{headers[k_det]}}
+                                        </span>
+                                    </div>
+
+                                    {% set id = k_det ~ "_container" %}
+                                    <div id={{id}} class="container" style="display: none;">
+
+                                        {% if k_det == "regkeys"%}
+                                            {% for k_rk, v_rk in val_det.items() %}
                                                 <div class="secsection">
+                                                    {% set id = k_rk ~ "_" ~ loop.index ~ "_div" %}
+                                                    <div id={{id}} class="section_title" onclick="show_hide(id)">
+                                                        <span class="section_title_span" tabindex="0">
+                                                            {{ k_rk }}
+                                                        </span>
+                                                    </div>
 
-                                                    Policy info:
-                                                    {% if pol_obj["name"] == "Mozzila Firefox"%}
-                                                        {% for k_obj, v_obj in pol_obj["policies"].items()%}
+                                                    {% set id = k_rk ~ "_" ~ loop.index ~ "_container" %}
+                                                    <div id={{id}} class="container" style="display: none;">
+                                                        <div class="secsection">
+                                                            Registry key info:
+
                                                             <table class="tablein">
+                                                                <!-- заголовок - ключи словаря -->
                                                                 <tr class="trin">
-                                                                <td><b>{{k_obj}}:</b></td>
+                                                                    {% for header in v_rk[0].keys()%}
+                                                                        {% if header != "type" %}
+                                                                            <td style="width: 30%;"><b>{{header}}</b></td>
+                                                                        {% endif %}
+                                                                    {% endfor %}
                                                                 </tr>
-                                                            
-                                                                {% for pol_k_obj, pol_v_obj in v_obj.items() %}
-                                                                <tr class="trin">
-                                                                    <td style="width: 30%;">{{pol_k_obj}}</td>
-                                                                    <td>{{pol_v_obj}}</td>
-                                                                </tr>
+
+                                                                {% for dict_info in v_rk%}
+                                                                    <tr class="trin">
+                                                                        {% for kk_rk, value_rk in dict_info.items() %}
+                                                                            {% if kk_rk != "type" %}
+                                                                                <td style="width: 30%;">{{value_rk}}</td>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </tr>
                                                                 {% endfor %}
                                                             </table>
-                                                        {% endfor %}
-                                                    {% else %}
-                                                        {% for k_obj, v_obj in pol_obj["policies"].items()%}
-                                                            <table class="tablein">
-                                                                <tr class="trin">
-                                                                    <td style="width: 30%;">{{k_obj}}</td>
-                                                                    <td>{{v_obj}}</td>
-                                                                </tr>
-                                                            </table>
-                                                        {% endfor %}
-                                                    {% endif %}
+                                                            
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                            {% endfor%}
+
+                                        {% elif k_det == "gpos" %}
+                                            {% set id = k_det ~ "_" ~ loop.index ~ "_div" %}
+                                            <div class="secsection">
+                                                Received Group Policy objects:
+                                                {% if val_det |length != 0%}
+                                                    <table class="tablein">
+                                                        <tr class="trin">
+                                                            <td> <b>Name</b> </td>
+                                                            <td> <b>UUID</b> </td>
+                                                            <td> <b>file_sys_path</b> </td>
+                                                        </tr>
+                                                        {% for gpo in val_det%}    
+                                                            <tr class="trin"></tr>
+                                                                <td>{{gpo["name_gpo"]}}</td>
+                                                                <td>{{gpo["uuid"]}}</td>
+                                                                <td>{{gpo["path"]}}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                {% else %}
+                                                    No data.
+                                                {% endif %}
                                             </div>
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            {% else %}
-                                No data.
-                            {% endif %}
+                                        {% elif k_det == "admtempls" %}
+                                            {%if val_det |length != 0%}
+                                                {% for templ_dict in val_det%}
+                                                    <div class="secsection">
+                                                        {% set id = templ_dict["name"] ~ "_" ~ loop.index ~ "_div" %}
+                                                        <div id={{id}} class="section_title" onclick="show_hide(id)">
+                                                            <span class="section_title_span" tabindex="0">
+                                                                {{ templ_dict["name"] }}
+                                                            </span>
+                                                        </div>
+
+                                                        {% set id = templ_dict["name"] ~ "_" ~ loop.index ~ "_container" %}
+                                                        <div id={{id}} class="container" style="display: none;">
+                                                            <div class="secsection">
+                                                                Policy info:
+                                                                {% if templ_dict["name"] == "Mozzila Firefox"%}
+                                                                    {% for k_obj, v_obj in templ_dict["policies"].items()%}
+                                                                        <table class="tablein">
+                                                                            <tr class="trin">
+                                                                            <td><b>{{k_obj}}:</b></td>
+                                                                            </tr>
+                                                                        
+                                                                            {% for pol_k_obj, pol_v_obj in v_obj.items() %}
+                                                                            <tr class="trin">
+                                                                                <td style="width: 30%;">{{pol_k_obj}}</td>
+                                                                                <td>{{pol_v_obj}}</td>
+                                                                            </tr>
+                                                                            {% endfor %}
+                                                                        </table>
+                                                                    {% endfor %}
+                                                                {% else %}
+                                                                    {% for k_obj, v_obj in templ_dict["policies"].items()%}
+                                                                        <table class="tablein">
+                                                                            <tr class="trin">
+                                                                                <td style="width: 30%;">{{k_obj}}</td>
+                                                                                <td>{{v_obj}}</td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <div class="secsection">
+                                                    No data.
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
-                    </div>
+                        
+                {% endif %}
                 </div>
+            </div> 
             {% endif %}
         {% endfor %}
 </body>

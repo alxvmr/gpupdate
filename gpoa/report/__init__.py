@@ -38,12 +38,17 @@ def reporting(message_code, data, mess):
                 entity.computer_name = data["value"]
         elif message_code == "D91": # firefox
             entity.policies = AdmTemplate(data["destfile"], "Mozzila Firefox")
-        # elif message_code == "D97": # chromium
-            # потому что с таким номером существует 2 лога, но с разными ключами в data
-            # try:
-            #     entity.policies = AdmTemplate(data["destfile"], "Chromium")
-            # except:
-            #     pass
+        elif message_code == "D97": # chromium
+            desfile = data["destfile"]
+            type_destfile = desfile.split("/")[-2]
+            if type_destfile == "managed":
+                entity.policies = AdmTemplate(desfile, "Chromium")
+        elif message_code == "D185": # yandex
+            desfile = data["destfile"]
+            type_destfile = desfile.split("/")[-2]
+            ipdb.set_trace()
+            if type_destfile == "managed":
+                entity.policies = AdmTemplate(desfile, "Yandex")
         elif message_code == "D22": # ключи реестра
             entity.regkeys = RegistryKey(data["keyname"], data["valuename"], data["type"], data["data"])
         elif message_code[0] == "W":

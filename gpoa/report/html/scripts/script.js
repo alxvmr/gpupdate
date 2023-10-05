@@ -12,3 +12,22 @@ function show_hide(id){
         ch.style.display = "block";
     }
 }
+
+// раскрыть/собрать все секции
+function show_hide_all(id){
+    var val = document.getElementById(id).innerText;
+    console.log(val);
+    var divs = document.querySelectorAll("div.container[style^='display']");
+    console.log(divs);
+    document.getElementById(id).innerText = "show all";''
+
+    var target = "none";
+    if (val == "show all"){
+        target = "block";
+        document.getElementById(id).innerText = "hide all";
+    }
+    
+    for (var i = 0; i < divs.length; i++){
+        divs[i].style.display = target;
+    }
+}

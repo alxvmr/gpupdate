@@ -10,13 +10,20 @@
     <script src="/usr/lib/python3/site-packages/gpoa/report/html/scripts/script.js"></script>
     <!--  -->
     <table class="table" border="1">
-        <tr>
-            <td style="background-color: #A0BACB;">
-                {% if info["is_machine"] == 'True' %}
-                    Group Policy Results (<b>for computer</b>)
-                {% else %}
-                    Group Policy Results (<b>for user</b>)
-                {% endif %}
+        <tr style="background-color: #A0BACB;">
+            <td>
+                <div>
+                    {% if info["is_machine"] == 'True' %}
+                        Group Policy Results (<b>for computer</b>)
+                    {% else %}
+                        Group Policy Results (<b>for user</b>)
+                    {% endif %}
+                </div>
+                <div style="margin:0 auto;text-align: right">
+                    <span id="show_all" class="section_title_span" onclick="show_hide_all(id)">
+                        show all
+                    </span>
+                </div>
             </td>
         </tr>
         <tr>
@@ -61,10 +68,115 @@
     <!--  -->
     <!-- <div class="section"> -->
 
-        {% set headers = ({"warnings":"Warnings", "errors":"Errors", "gpos":"GPOs", "summary":"Summary", "pols":"Policies"}) %}
+        {% set headers = ({"warnings":"Warnings", "errors":"Errors", "gpos":"GPOs", "summary":"Summary", "details":"Details", "admtempls":"Administrative Templates", "regkeys":"Registry keys"}) %}
 
         {% for k, v in info.items() %}
-            {% if v is iterable and (v is not string and v is not mapping) %}
+            {% if v is mapping%}
+                <div class="section">
+                        {% set id = k ~ "_div" %}
+                        <div id={{id}} class="section_title" onclick="show_hide(id)">
+                            <span class="section_title_span" tabindex="0">
+                                {{ headers[k] }}
+                            </span>
+                        </div>
+
+                        {% set id = k ~ "_container" %}
+                        <div id={{id}} class="container" style="display: none;">
+                {% if k == "summary"%}
+                        <div class="secsection">
+                            {% for k1, v1 in v.items()%}
+                                {% if k1 == "errors" or k1 == "warnings"%}
+                                    <div class="section">
+                                        {% set id = k1 ~ "_div" %}
+                                        <div id={{id}} class="section_title" onclick="show_hide(id)">
+                                                <span class="section_title_span" tabindex="0">
+                                                    {{ headers[k1] }}
+                                                </span>
+                                        </div>
+                                        {% set id = k1 ~ "_container" %}
+                                        <div id={{id}} class="container">
+                                            <div class="secsection">
+                                        <!-- отрисовка ошибок и предупреждений -->
+                                                {% if v1 |length != 0%}
+                                                    <table class="tablein">
+                                                        <tr class="trin">
+                                                            <td> <b> </b> </td>
+                                                            <td style="width: 50%;"> <b>Text</b> </td>
+                                                            <td style="width: 50%;"> <b>Additionaly</b> </td>
+                                                        </tr>
+                                                        {% for e in v1%}
+                                                            <tr class="trin"></tr>
+                                                                <td>
+                                                                    {% if k1 == "errors" %}
+                                                                    <svg width="15" height="15" viewBox="0 0 15 15">
+                                                                        <image x="0" y="0" width="15" height="15" xlink:href="/usr/lib/python3/site-packages/gpoa/report/html/imgs/error.jpg"/>
+                                                                    </svg>
+                                                                    {% elif k1 == "warnings" %}
+                                                                        <svg width="15" height="15" viewBox="0 0 15 15">
+                                                                            <image x="0" y="0" width="15" height="15" xlink:href="/usr/lib/python3/site-packages/gpoa/report/html/imgs/warning.jpg"/>
+                                                                        </svg>
+                                                                    {% endif %}
+                                                                </td>
+                                                                <td style="width: 45%;">{{ e["text"] }}</td>
+                                                                <td style="width: 45%;">{{ e["info"] }}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                {% else %}
+                                                    No data.
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                {% elif k == "regkeys" %}
+                        {% for k_rk, v_rk in v.items() %}
+                            <div class="secsection">
+                                {% set id = k_rk ~ "_" ~ loop.index ~ "_div" %}
+                                <div id={{id}} class="section_title" onclick="show_hide(id)">
+                                    <span class="section_title_span" tabindex="0">
+                                        {{ k_rk }}
+                                    </span>
+                                </div>
+            
+                                {% set id = k_rk ~ "_" ~ loop.index ~ "_container" %}
+                                <div id={{id}} class="container" style="display: none;">
+                                    <div class="secsection">
+                                        Registry key info:
+
+                                        <table class="tablein">
+                                            <!-- заголовок - ключи словаря -->
+                                            <tr class="trin">
+                                                {% for header in v_rk[0].keys()%}
+                                                    {% if header != "type" %}
+                                                        <td style="width: 30%;"><b>{{header}}</b></td>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </tr>
+
+                                            {% for dict_info in v_rk%}
+                                                <tr class="trin">
+                                                    {% for kk_rk, value_rk in dict_info.items() %}
+                                                        {% if kk_rk != "type" %}
+                                                            <td style="width: 30%;">{{value_rk}}</td>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        
+                {% endif %}
+                    </div>
+                </div> 
+            {% elif v is iterable and (v is not string and v is not mapping) %}
                 <div class="section">
                     {% set id = k ~ "_div" %}
                     <div id={{id}} class="section_title" onclick="show_hide(id)">
@@ -150,21 +262,31 @@
                                                 <div class="secsection">
 
                                                     Policy info:
-                                                    {% for k_obj, v_obj in pol_obj["info"]["policies"].items()%}
-                                                        <table class="tablein">
-                                                            <tr class="trin">
-                                                            <td><b>{{k_obj}}:</b></td>
-                                                            </tr>
-                                                        
-                                                            {% for pol_k_obj, pol_v_obj in v_obj.items() %}
-                                                            <tr class="trin">
-                                                                <td>{{pol_k_obj}}</td>
-                                                                <td>{{pol_v_obj}}</td>
-                                                            </tr>
-                                                            {% endfor %}
-                                                        </table>
-                                                    {% endfor %}
-
+                                                    {% if pol_obj["name"] == "Mozzila Firefox"%}
+                                                        {% for k_obj, v_obj in pol_obj["policies"].items()%}
+                                                            <table class="tablein">
+                                                                <tr class="trin">
+                                                                <td><b>{{k_obj}}:</b></td>
+                                                                </tr>
+                                                            
+                                                                {% for pol_k_obj, pol_v_obj in v_obj.items() %}
+                                                                <tr class="trin">
+                                                                    <td style="width: 30%;">{{pol_k_obj}}</td>
+                                                                    <td>{{pol_v_obj}}</td>
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </table>
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {% for k_obj, v_obj in pol_obj["policies"].items()%}
+                                                            <table class="tablein">
+                                                                <tr class="trin">
+                                                                    <td style="width: 30%;">{{k_obj}}</td>
+                                                                    <td>{{v_obj}}</td>
+                                                                </tr>
+                                                            </table>
+                                                        {% endfor %}
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
@@ -176,71 +298,6 @@
                         </div>
                     </div>
                 </div>
-            {% elif v is mapping%}
-                {% if v["type"] == "summary"%}
-                    <div class="section">
-                        {% set id = v["type"] ~ "_div" %}
-                        <div id={{id}} class="section_title" onclick="show_hide(id)">
-                            <span class="section_title_span" tabindex="0">
-                                {{ headers[v["type"]] }}
-                            </span>
-                        </div>
-
-                        {% set id = v["type"] ~ "_container" %}
-                        <div id={{id}} class="container" style="display: none;">
-                            <div class="secsection">
-                                {% for k1, v1 in v.items()%}
-                                    {% if k1 == "errors" or k1 == "warnings"%}
-                                        <div class="section">
-                                            {% set id = k1 ~ "_div" %}
-                                            <div id={{id}} class="section_title" onclick="show_hide(id)">
-                                                <span class="section_title_span" tabindex="0">
-                                                    {{ headers[k1] }}
-                                                </span>
-                                            </div>
-
-                                            {% set id = k1 ~ "_container" %}
-                                            <div id={{id}} class="container" style="display: none;">
-                                                <div class="secsection">
-                                            <!-- отрисовка ошибок и предупреждений -->
-                                                    {% if v1 |length != 0%}
-                                                        <table class="tablein">
-                                                            <tr class="trin">
-                                                                <td> <b> </b> </td>
-                                                                <td> <b>Text</b> </td>
-                                                                <td> <b>Additionaly</b> </td>
-                                                            </tr>
-                                                            {% for e in v1%}
-                                                                <tr class="trin"></tr>
-                                                                    <td>
-                                                                        {% if k1 == "errors" %}
-                                                                        <svg width="15" height="15" viewBox="0 0 15 15">
-                                                                            <image x="0" y="0" width="15" height="15" xlink:href="/usr/lib/python3/site-packages/gpoa/report/html/imgs/error.jpg"/>
-                                                                        </svg>
-                                                                        {% elif k1 == "warnings" %}
-                                                                            <svg width="15" height="15" viewBox="0 0 15 15">
-                                                                                <image x="0" y="0" width="15" height="15" xlink:href="/usr/lib/python3/site-packages/gpoa/report/html/imgs/warning.jpg"/>
-                                                                            </svg>
-                                                                        {% endif %}
-                                                                    </td>
-                                                                    <td>{{ e["text"] }}</td>
-                                                                    <td>{{ e["info"] }}</td>
-                                                                </tr>
-                                                            {% endfor %}
-                                                        </table>
-                                                    {% else %}
-                                                        No data.
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div> 
-                {% endif %}
             {% endif %}
         {% endfor %}
 </body>

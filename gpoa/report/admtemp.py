@@ -6,7 +6,11 @@ class AdmTemplate():
     type_obj = "adm_templates"
 
     def __init__(self, path, name):
-        self._info = json.load(open(path))
+        desfile = json.load(open(path))
+        if name == "Mozzila Firefox":
+            self._info = desfile
+        else:
+            self._info = {"policies" : desfile}
         self._name = name
 
     @property
@@ -18,8 +22,9 @@ class AdmTemplate():
         return self._name
     
     def get_info_dict(self):
-        return {
+        d = {
             "name" : self.name,
-            "info" : self.info,
             "type" : "pol"
         }
+
+        return {**d, **self.info}
